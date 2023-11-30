@@ -7,22 +7,49 @@
         (function() {
             var myConnector = tableau.makeConnector();
 
-            myConnector.getSchema = function(schemaCallback) {
-                // Define the schema of your data
+           myConnector.getSchema = function(schemaCallback) {
+            var cols = [
+                { id: "ID", dataType: tableau.dataTypeEnum.int },
+                { id: "name", dataType: tableau.dataTypeEnum.string },
+                { id: "url", dataType: tableau.dataTypeEnum.string }
+            ];
+        
+            var tableSchema = {
+                id: "JSONFeed",
+                alias: "JSON data from GitHub",
+                columns: cols
             };
+        
+            schemaCallback([tableSchema]);
+        };
 
-            myConnector.getData = function(table, doneCallback) {
-                var jsonUrls = [
-                    'https://raw.githubusercontent.com/illustrating-impact-dev/fea/main/testfile1.json',
-                    'https://raw.githubusercontent.com/illustrating-impact-dev/fea/main/testfile2.json'
-                ];
+           myConnector.getData = function(table, doneCallback) {
+    var jsonUrls = [
+        'https://github.com/user/repo/file1.json',
+        'https://github.com/user/repo/file2.json'
+    ];
 
-                Promise.all(jsonUrls.map(url => fetch(url).then(resp => resp.json())))
-                    .then(data => {
-                        // Process and pass the data to Tableau
-                        doneCallback();
-                    }).catch(error => console.log(error));
-            };
+    jsonUrls.forEach(url => {
+        fetch(url)
+            .then(response => response.json())
+            .then(jsonData => {
+                var tableData = [];
+
+                // Iterate over each entry in the JSON file
+                for (var i = 0, len = jsonData.length; i < len; i++) {
+                    tableData.push({
+                        "ID": jsonData[i].ID,
+                        "name": jsonData[i].name,
+                        "url": jsonData[i].url
+                    });
+                }
+
+                table.appendRows(tableData);
+                doneCallback();
+            })
+            .catch(error => console.log(error));
+    });
+};
 
             tableau.registerConnector(myConnector);
         })();
