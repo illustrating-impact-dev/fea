@@ -13,10 +13,8 @@
 
             myConnector.getData = function(table, doneCallback) {
                 var jsonUrls = [
-                    'https://github.com/user/repo/file1.json',
-                    'https://github.com/user/repo/file2.json',
-                    'https://github.com/user/repo/file3.json',
-                    'https://github.com/user/repo/file.geojson'
+                    'https://raw.githubusercontent.com/illustrating-impact-dev/fea/main/testfile1.json',
+                    'https://raw.githubusercontent.com/illustrating-impact-dev/fea/main/testfile2.json'
                 ];
 
                 Promise.all(jsonUrls.map(url => fetch(url).then(resp => resp.json())))
