@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Tableau WDC</title>
+    <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js"></script>
+    <script>
+        (function() {
+            var myConnector = tableau.makeConnector();
+
+            myConnector.getSchema = function(schemaCallback) {
+                // Define the schema of your data
+            };
+
+            myConnector.getData = function(table, doneCallback) {
+                var jsonUrls = [
+                    'https://github.com/user/repo/file1.json',
+                    'https://github.com/user/repo/file2.json',
+                    'https://github.com/user/repo/file3.json',
+                    'https://github.com/user/repo/file.geojson'
+                ];
+
+                Promise.all(jsonUrls.map(url => fetch(url).then(resp => resp.json())))
+                    .then(data => {
+                        // Process and pass the data to Tableau
+                        doneCallback();
+                    }).catch(error => console.log(error));
+            };
+
+            tableau.registerConnector(myConnector);
+        })();
+    </script>
+</head>
+<body>
+    <button type="button" onclick="tableau.submit()">Get Data</button>
+</body>
+</html>
